@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -243,8 +237,10 @@
     <Compile Include="Assets\LOL\GPGSIDs.cs" />
     <Compile Include="Assets\Scripts\Data\Attributes.cs" />
     <Compile Include="Assets\Scripts\Data\Data.cs" />
-    <Compile Include="Assets\Scripts\Data\MPInterfaces.cs" />
-    <Compile Include="Assets\Scripts\Data\MultiplayerController.cs" />
+    <Compile Include="Assets\Scripts\Data\GameController.cs" />
+    <Compile Include="Assets\Scripts\Data\MultiplayerScripts\InvitationManager.cs" />
+    <Compile Include="Assets\Scripts\Data\MultiplayerScripts\MPInterfaces.cs" />
+    <Compile Include="Assets\Scripts\Data\MultiplayerScripts\MultiplayerController.cs" />
     <Compile Include="Assets\Scripts\MiniGameScripts\Bar.cs" />
     <Compile Include="Assets\Scripts\MiniGameScripts\Dewlap.cs" />
     <Compile Include="Assets\Scripts\MiniGameScripts\PushUp.cs" />
@@ -255,6 +251,7 @@
     <Compile Include="Assets\Scripts\UI Scripts\RetainedUserPicksScript.cs" />
     <Compile Include="Assets\Scripts\UI Scripts\StatMenuUI.cs" />
     <Compile Include="Assets\Scripts\UI Scripts\UIManager.cs" />
+    <Compile Include="Assets\ShowSkin.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\GooglePlayGames\Editor\Podfile.txt" />

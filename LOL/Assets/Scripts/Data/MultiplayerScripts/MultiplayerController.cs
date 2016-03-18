@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi.Multiplayer;
 using UnityEngine.SceneManagement;
@@ -9,13 +10,35 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 	private static MultiplayerController _instance = null;
 
 	private uint minOpponents = 1;
-	private uint maxOpponents = 1;
+	private uint maxOpponents = 2;
 	private uint gameVariation = 0;
 
-	public MPLobbyListener lobbylisterner;
+    private bool showingWaitingRoom = false;
+
+    public enum GameState
+    {
+        SettingUp,
+        Playing,
+        Finished,
+        SetupFailed,
+        Aborted
+    };
+
+    private GameState mGameState = GameState.SettingUp;
+
+    public MPLobbyListener lobbylisterner;
+
+    public List<Participant> GetAllPlayers()
+    {
+        return PlayGamesPlatform.Instance.RealTime.GetConnectedParticipants();
+    }
+    public string GetMyParticipantId()
+    {
+        return PlayGamesPlatform.Instance.RealTime.GetSelf().ParticipantId;
+    }
 
 
-	private MultiplayerController()
+    private MultiplayerController()
 	{
 		PlayGamesPlatform.DebugLogEnabled = true;
 		PlayGamesPlatform.Activate ();
@@ -37,14 +60,16 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 			PlayGamesPlatform.Instance.localUser.Authenticate ((bool success) => {
 				if (success) {
 					Debug.Log ("you've signed in! Welcome" + PlayGamesPlatform.Instance.localUser.userName);
-					StartMatchMaking();
+                    StartMatchMaking();
+					
 				} else {
 					Debug.Log ("sign in failed");
 				}
 			});
 		}else{
 			Debug.Log ("You're already signed in");
-			StartMatchMaking ();
+            StartMatchMaking();
+			
 		}
 	}
 
@@ -54,13 +79,15 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 			PlayGamesPlatform.Instance.Authenticate ((bool success) => {
 				if (success) {
 					Debug.Log ("Silently signed in! Welcome" + PlayGamesPlatform.Instance.localUser.userName);
-				} else {
+                    StartMatchMaking();
+                } else {
 					Debug.Log ("You're NOT signed in");
 				}
 			}, true);
 		} else {
 			Debug.Log ("You're already signed in");
-		}
+            StartMatchMaking();
+        }
 	}
 
 	public void SignOut()
@@ -82,29 +109,56 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 
 	public void StartMatchMaking()
 	{
-		PlayGamesPlatform.Instance.RealTime.CreateQuickGame (minOpponents, maxOpponents, gameVariation, this);
+      
+        PlayGamesPlatform.Instance.RealTime.CreateWithInvitationScreen (minOpponents, maxOpponents, gameVariation, this);
 	}
-	public void OnRoomSetupProgress (float percent)
+
+    public static void AcceptFromInbox()
+    {
+        
+        PlayGamesPlatform.Instance.RealTime.AcceptFromInbox(_instance);
+    }
+
+    public static void AcceptInvitation(string invitationId)
+    {
+        
+        PlayGamesPlatform.Instance.RealTime.AcceptInvitation(invitationId, _instance);
+    }
+
+    public void OnRoomSetupProgress (float percent)
 	{
 		ShowMPStatus ("We are " + percent + "% done with setup");
-	}
+
+        if (!showingWaitingRoom)
+        {
+            showingWaitingRoom = true;
+            PlayGamesPlatform.Instance.RealTime.ShowWaitingRoomUI();
+        }
+    }
 
 	public void OnRoomConnected (bool success)
 	{
 		if (success) {
+            mGameState = GameState.Playing;
 			lobbylisterner.HideLobby ();
 			lobbylisterner = null;
 			SceneManager.LoadScene ("MiniGameMenu");
 			ShowMPStatus ("We are connected to the room! Start Game");
 		} else {
 			ShowMPStatus ("Error connecting to room");
+            mGameState = GameState.SetupFailed;
 		}
 	}
 
 	public void OnLeftRoom ()
 	{
-		ShowMPStatus("We have left the room ! Clean Up!");
-	}
+        if (mGameState != GameState.Finished)
+        {
+
+            mGameState = GameState.Aborted;
+        }
+        ShowMPStatus("We have left the room ! Clean Up!");
+    }
 
 	public void OnParticipantLeft (Participant participant)
 	{
@@ -129,6 +183,16 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 	{
 		ShowMPStatus ("We have recieved some gameplay messages from participant ID: " + senderId);
 	}
+
+
+    public GameState State
+    {
+        get
+        {
+            return mGameState;
+        }
+    }
+
 }
 
 

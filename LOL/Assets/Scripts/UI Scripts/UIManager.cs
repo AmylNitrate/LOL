@@ -2,13 +2,15 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 
 public class UIManager : MonoBehaviour
 {
 
     //private Text textRef1;
 
-
+    
 
     public void GoToLevel(string Level)
     {
@@ -24,6 +26,11 @@ public class UIManager : MonoBehaviour
     void Start ()
     {
         //textRef1 = GameObject.Find("EnergyText").GetComponent<Text>();
+        var config = new PlayGamesClientConfiguration.Builder()
+            .WithInvitationDelegate(InvitationManager.Instance.OnInvitationReceived)
+            .Build();
+        PlayGamesPlatform.InitializeInstance(config);
+        PlayGamesPlatform.DebugLogEnabled = true;
 
     }
 	
