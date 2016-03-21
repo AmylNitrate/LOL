@@ -26,11 +26,11 @@ public class UIManager : MonoBehaviour
     void Start ()
     {
         //textRef1 = GameObject.Find("EnergyText").GetComponent<Text>();
-        var config = new PlayGamesClientConfiguration.Builder()
-            .WithInvitationDelegate(InvitationManager.Instance.OnInvitationReceived)
-            .Build();
-        PlayGamesPlatform.InitializeInstance(config);
-        PlayGamesPlatform.DebugLogEnabled = true;
+        //var config = new PlayGamesClientConfiguration.Builder()
+        //    .WithInvitationDelegate(InvitationManager.Instance.OnInvitationReceived)
+        //    .Build();
+        //PlayGamesPlatform.InitializeInstance(config);
+        //PlayGamesPlatform.DebugLogEnabled = true;
 
     }
 	

@@ -238,7 +238,6 @@
     <Compile Include="Assets\Scripts\Data\Attributes.cs" />
     <Compile Include="Assets\Scripts\Data\Data.cs" />
     <Compile Include="Assets\Scripts\Data\GameController.cs" />
-    <Compile Include="Assets\Scripts\Data\MultiplayerScripts\InvitationManager.cs" />
     <Compile Include="Assets\Scripts\Data\MultiplayerScripts\MPInterfaces.cs" />
     <Compile Include="Assets\Scripts\Data\MultiplayerScripts\MultiplayerController.cs" />
     <Compile Include="Assets\Scripts\MiniGameScripts\Bar.cs" />

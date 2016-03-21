@@ -17,12 +17,17 @@ public class MiniGMenuUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update ()
-  
-
-{
+    {
         textRef2.text = "" + Data.control.points;
         textRef3.text = ""; // + Data.control.OppEnergy;
         textRef4.text = ""; // + Data.control.OppPoints;
+
+    }
+
+    public void SetInfo(int points, int energy)
+    {
+        textRef3.text = "U " + energy;
+        textRef4.text = "U" + points;
 
     }
 }

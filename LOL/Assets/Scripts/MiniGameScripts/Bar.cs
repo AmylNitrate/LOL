@@ -54,7 +54,7 @@ public class Bar : MonoBehaviour
         }
         if(col == goodZone)
         {
-            speed = (float)0.5;
+            speed = (float)0.2;
             Good = true;
 
         }

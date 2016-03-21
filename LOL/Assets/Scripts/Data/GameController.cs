@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GooglePlayGames.BasicApi.Multiplayer;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour, MPUpdateListener {
 
     public GameObject opponentPrefab;
 
@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour {
 
     void SetupMultiplayerGame()
     {
+        MultiplayerController.Instance.updateListener = this;
         _myParticipantId = MultiplayerController.Instance.GetMyParticipantId();
 
         List<Participant> allPlayers = MultiplayerController.Instance.GetAllPlayers();
@@ -32,4 +33,21 @@ public class GameController : MonoBehaviour {
         }
         _multiplayerReady = true;
     }
+
+    void DoMultiplayerUpdate()
+    {
+        MultiplayerController.Instance.SendMyUpdate(Data.control.points, Data.control.energy);
+
+    }
+
+    public void UpdateReceived(string senderId, int points, int energy)
+    {
+        if (_multiplayerReady)
+        {
+            MiniGMenuUI miniGameUI;
+            miniGameUI = GameObject.Find("UIManager").GetComponent<MiniGMenuUI>();
+            miniGameUI.SetInfo(points, energy);
+        }
+    }
+
 }

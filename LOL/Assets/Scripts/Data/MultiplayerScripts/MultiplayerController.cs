@@ -9,11 +9,11 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 
 	private static MultiplayerController _instance = null;
 
-	private uint minOpponents = 1;
+	private uint minOpponents = 2;
 	private uint maxOpponents = 2;
 	private uint gameVariation = 0;
 
-    private bool showingWaitingRoom = false;
+    //private bool showingWaitingRoom = false;
 
     public enum GameState
     {
@@ -25,6 +25,11 @@ public class MultiplayerController : RealTimeMultiplayerListener {
     };
 
     private GameState mGameState = GameState.SettingUp;
+
+    private byte _protocolVersion = 1;
+    private int _updateMessageLength = 22;
+    private List<byte> _updateMessage;
+    public MPUpdateListener updateListener;
 
     public MPLobbyListener lobbylisterner;
 
@@ -40,6 +45,7 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 
     private MultiplayerController()
 	{
+        _updateMessage = new List<byte>(_updateMessageLength);
 		PlayGamesPlatform.DebugLogEnabled = true;
 		PlayGamesPlatform.Activate ();
 	}
@@ -110,18 +116,18 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 	public void StartMatchMaking()
 	{
       
-        PlayGamesPlatform.Instance.RealTime.CreateWithInvitationScreen (minOpponents, maxOpponents, gameVariation, this);
+        PlayGamesPlatform.Instance.RealTime.CreateQuickGame (minOpponents, maxOpponents, gameVariation, this);
 	}
 
     public static void AcceptFromInbox()
     {
-        
+
         PlayGamesPlatform.Instance.RealTime.AcceptFromInbox(_instance);
     }
 
     public static void AcceptInvitation(string invitationId)
     {
-        
+
         PlayGamesPlatform.Instance.RealTime.AcceptInvitation(invitationId, _instance);
     }
 
@@ -129,11 +135,11 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 	{
 		ShowMPStatus ("We are " + percent + "% done with setup");
 
-        if (!showingWaitingRoom)
-        {
-            showingWaitingRoom = true;
-            PlayGamesPlatform.Instance.RealTime.ShowWaitingRoomUI();
-        }
+        //if (!showingWaitingRoom)
+        //{
+        //    showingWaitingRoom = true;
+        //    PlayGamesPlatform.Instance.RealTime.ShowWaitingRoomUI();
+        //}
     }
 
 	public void OnRoomConnected (bool success)
@@ -154,7 +160,6 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 	{
         if (mGameState != GameState.Finished)
         {
-
             mGameState = GameState.Aborted;
         }
         ShowMPStatus("We have left the room ! Clean Up!");
@@ -181,7 +186,18 @@ public class MultiplayerController : RealTimeMultiplayerListener {
 
 	public void OnRealTimeMessageReceived (bool isReliable, string senderId, byte[] data)
 	{
-		ShowMPStatus ("We have recieved some gameplay messages from participant ID: " + senderId);
+        byte messageVersion = (byte)data[0];
+        char messageType = (char)data[1];
+        if (messageType == 'U' && data.Length == _updateMessageLength)
+        {
+            int points = System.BitConverter.ToInt32(data, 2);
+            int energy = System.BitConverter.ToInt32(data, 6);
+            Debug.Log("Player " + senderId + " has " + points + " points and " + energy + " energy");
+            if (updateListener != null)
+            {
+                updateListener.UpdateReceived(senderId, points, energy);
+            }
+        }
 	}
 
 
@@ -191,6 +207,18 @@ public class MultiplayerController : RealTimeMultiplayerListener {
         {
             return mGameState;
         }
+    }
+
+    public void SendMyUpdate(int points, int energy)
+    {
+        _updateMessage.Clear();
+        _updateMessage.Add(_protocolVersion);
+        _updateMessage.Add((byte)'U');
+        _updateMessage.AddRange(System.BitConverter.GetBytes(points));
+        _updateMessage.AddRange(System.BitConverter.GetBytes(energy));
+        byte[] messageToSend = _updateMessage.ToArray();
+        Debug.Log("Sending my update message " + messageToSend + "to all players in the room");
+        PlayGamesPlatform.Instance.RealTime.SendMessageToAll(false, messageToSend);
     }
 
 }

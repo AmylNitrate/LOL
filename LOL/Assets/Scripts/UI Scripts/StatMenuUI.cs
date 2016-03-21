@@ -9,9 +9,7 @@ public class StatMenuUI : MonoBehaviour, MPLobbyListener
     private Text textRef3;
 
     public Texture2D signOutButton;
-    public Texture2D[] buttonTextures;
-    private float buttonWidth;
-    private float buttonHeight;
+
 
     private string _lobbyMessage;
 
@@ -22,9 +20,7 @@ public class StatMenuUI : MonoBehaviour, MPLobbyListener
         textRef2 = GameObject.Find("UpgradePoints").GetComponent<Text>();
         textRef3 = GameObject.Find("Lobby").GetComponent<Text>();
 
-        // I know that 301x55 looks good on a 660-pixel wide screen, so we can extrapolate from there
-        buttonWidth = 301.0f * Screen.width / 660.0f;
-        buttonHeight = 55.0f * Screen.width / 660.0f;
+
 
         MultiplayerController.Instance.TrySilentSignIn();
     }

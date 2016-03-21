@@ -41,9 +41,17 @@ public class Dewlap : MonoBehaviour
 
             Debug.Log(dewlap.transform.position.x);
 
-            if (dewlap.transform.position.x < 1.8)
+            if (dewlap.transform.position.x < 1.2)
             {
                 dewlap.transform.Translate((float)-0.01, (float)0.01, 0);
+            }
+            else if (dewlap.transform.position.x < 1.6)
+            {
+                dewlap.transform.Translate((float)-0.005, (float)0.005, 0);
+            }
+            else if (dewlap.transform.position.x < 1.7)
+            {
+                dewlap.transform.Translate((float)-0.001, (float)0.001, 0);
             }
             else if(dewlap.transform.position.x > 1.8)
             {
@@ -57,9 +65,18 @@ public class Dewlap : MonoBehaviour
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit))
                     if (hit.collider == dewlapCollider)
-                        dewlap.transform.Translate((float)0.05, (float)-0.05, 0);
+                    {
+                        if (dewlap.transform.position.x < 1.9 && dewlap.transform.position.x > 1.3)
+                        {
+            
+                            dewlap.transform.Translate((float)0.06, (float)-0.06, 0);
+
+                        }
+
+                    }
+                
             }
-            else if(dewlap.transform.position.x < 1.4)
+            else if (dewlap.transform.position.x < 1.4)
             {
                 Debug.Log("STOP");
             }
